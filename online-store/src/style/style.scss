@@ -1,0 +1,28 @@
+@import 'abstracts/constants';
+@import 'abstracts/mixins';
+@import 'abstracts/placeholders';
+@import 'base/base';
+
+body {
+  background-color: lightblue;
+  font-family: 'Gilroy';
+}
+
+h1 {
+  font-size: 18px;
+  color: $hcolor;
+  background-color: $hbaccolor;
+}
+
+.image img{
+  width: 50px;
+  height: 50px;
+}
+
+.svg-img {
+  width: 30px;
+  height: 30px;
+  background-size: cover;
+  fill: black;
+  background-image: url(../img/github.svg);
+}
