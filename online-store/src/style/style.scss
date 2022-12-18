@@ -1,0 +1,14 @@
+@import 'abstracts/constants';
+@import 'abstracts/mixins';
+@import 'abstracts/placeholders';
+@import 'base/base';
+@import 'header';
+@import 'footer';
+@import 'body';
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
