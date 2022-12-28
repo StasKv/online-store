@@ -1,7 +1,29 @@
-.filter-category {
-  margin-bottom: 20px;
+.category, .brand {
   border: 2px solid $sky;
   border-radius: 5px;
-  height: 200px;
+  margin-bottom: 20px;
+}
+
+.filter-category, .filter-brand {
+  height: 215px;
   overflow: auto;
+}
+
+.item-category, .item-brand {
+  display: flex;
+  margin-bottom: 5px;
+}
+
+.label-category, .label-brand, .amount-products {
+  font-size: 20px;
+}
+
+.amount-products {
+  margin-left: auto;
+  padding-right: 10px;
+}
+
+.filter-category-header, .filter-brand-header {
+  text-align: center;
+  border-bottom: 2px solid $sky;
 }

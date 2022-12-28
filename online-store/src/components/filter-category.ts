@@ -1,60 +1,47 @@
 import { getProducts } from '../index';
 import { IProduct } from '../index';
-import { createProductCard } from './product-card';
 
-export const getArrayOfCategory = async () => {
+export const getArrayOfCategory = async (): Promise<Array<string>> => {
   const arrayOfProd: Array<IProduct> = await getProducts();
-  let arrayOfCategory: Array<string> = [];
   let result: Array<string> = [];
   arrayOfProd.forEach((item) => {
-    arrayOfCategory.push(item.category);
-  });
-  arrayOfCategory.forEach((item) => {
-    if (!result.includes(item)) {
-      result.push(item);
+    if (!result.includes(item.category)) {
+      result.push(item.category);
     }
   });
   return result;
 };
 
-export const createCategoryFilter = async () => {
+export const createCategoryFilter = async (): Promise<void> => {
   const filters = document.querySelector('.filters') as HTMLElement;
+  const category = document.createElement('div');
   const categoryFilter = document.createElement('div');
+  const categoryFilterHeader = document.createElement('h2');
+  category.classList.add('category');
   categoryFilter.classList.add('filter-category');
-  filters.append(categoryFilter);
+  categoryFilterHeader.classList.add('filter-category-header');
+  categoryFilterHeader.textContent = 'Category';
+  filters.append(category);
+  category.append(categoryFilterHeader);
+  category.append(categoryFilter);
   let listOfCategories: Array<string> = await getArrayOfCategory()
   listOfCategories.forEach(item => {
     const categoryElem = document.createElement('div');
     categoryElem.classList.add('item-category');
     const categoryInput = document.createElement('input');
-    categoryInput.classList.add('input-category');
+    categoryInput.classList.add('input', 'input-category');
     const categoryLabel = document.createElement('label');
     categoryLabel.classList.add('label-category');
+    const countProducts = document.createElement('span');
+    countProducts.classList.add('amount-products');
     categoryInput.type = 'checkbox';
     categoryInput.id = `${item}`;
+    countProducts.id = `${item}`;
     categoryLabel.htmlFor = `${item}`;
     categoryLabel.textContent = `${item}`;
     categoryFilter.append(categoryElem);
     categoryElem.append(categoryInput);
     categoryElem.append(categoryLabel);
+    categoryElem.append(countProducts);
   })
-
-  const collectionFilter = document.getElementsByClassName('input-category') as HTMLCollectionOf<HTMLInputElement>;
-  const ProductsList = document.querySelector('.products-items') as HTMLElement;
-  let arrayOfInputs: Array<HTMLInputElement> = Array.from(collectionFilter);
-  for (let item of arrayOfInputs) {
-  item.addEventListener('click', async () => {
-    while (ProductsList.lastElementChild) {
-      ProductsList.removeChild(ProductsList.lastElementChild);
-    }
-    for (let item of arrayOfInputs) {
-      if (item.checked) {
-        const products = await getProducts();
-          products.forEach(elem => {
-            if(elem.category === item.id) createProductCard(elem);
-        })
-      }
-    }
-  })
-  }
 };
