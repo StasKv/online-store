@@ -5,10 +5,13 @@
 @import 'header';
 @import 'footer';
 @import 'body';
+@import 'shopping-cart';
+@import 'pay-modal';
 
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
   list-style-type: none;
+  color: $gray;
 }
