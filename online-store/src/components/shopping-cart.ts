@@ -4,11 +4,11 @@ import {calculatingItemsInCart, cartProductsId, calculatingAmountInCart, IButton
 
 
 let promoCodeArr: Array<number> = [];
-/*interface IPromoCode {
-  id: number,
+interface IPromoCode {
+  id: string,
   percentDiscount: number,
   namePromo: string
-}*/
+}
 
 export const openCartModal = (mainWrapper: HTMLDivElement) => {
   mainWrapper.style.display = "none";
@@ -87,7 +87,7 @@ export const createCartModal = () => {
   promoCodeList.classList.add("promo-code-list");
 
   const promoTest = document.createElement("p");
-  promoTest.innerHTML = `Promo for test: '20sale', '10sale'`;
+  promoTest.innerHTML = `Promo for test: '5sale', '10%', RSS`;
   const buyNowButton = document.createElement("button");
   buyNowButton.innerHTML = "Buy now";
   buyNowButton.classList.add("buy-now");
@@ -121,6 +121,7 @@ export const createCartModal = () => {
 
   if (cartProductsId.length === 0 ) {
     productsInCartList.innerHTML = "Your shopping cart is empty!";
+    productsInCartHeader.style.display = "none";
   }
   
     cartProductsId.forEach((item, index) => {
@@ -187,67 +188,77 @@ export const createCartModal = () => {
 
 
       cartItemControlBtnRight.addEventListener("click", () => {
-      
         if (Number(item.counter) > 0 && currentStock > 0) {
           item.counter = String(+item.counter + 1);
-          cartItemControlSum.innerHTML = `${item.counter}`;
           currentStock = currentStock - 1;
-          dataStock.innerHTML = `Stock: ${currentStock}`;
           currentAmount = currentAmount + item.price;
-          dataAmount.innerHTML = `Amount: €${currentAmount}`;
-
+          showCartData();
           calculatingItemsInCart();
           calculatingAmountInCart();
-
         } 
+        calculatingDiscountPrice();
       });
 
       cartItemControlBtnLeft.addEventListener("click", (event) => {
       
         if (Number(item.counter) > 1) {
           item.counter = String(+item.counter - 1);
-          cartItemControlSum.innerHTML = `${item.counter}`;
           currentStock = currentStock + 1;
-          dataStock.innerHTML = `Stock: ${currentStock}`;
           currentAmount = currentAmount - item.price;
-          dataAmount.innerHTML = `Amount: €${currentAmount}`;
-         
+          showCartData();
         } else if (Number(item.counter) === 1) {
           const clickedDiv = event.target as IButtonPlusMinus;
           clickedDiv.closest(".products-in-cart-item").remove();
           deleteFromCart(item.id);
-          
         }
         calculatingItemsInCart();
         calculatingAmountInCart();
+        calculatingDiscountPrice();
+        if (cartProductsId.length === 0 ) {
+          productsInCartList.innerHTML = "Your shopping cart is empty!";
+          productsInCartHeader.style.display = "none";
+        }
       });
 
+      const showCartData = () => {
+        cartItemControlSum.innerHTML = `${item.counter}`;
+        dataStock.innerHTML = `Stock: ${currentStock}`;
+        dataAmount.innerHTML = `Amount: €${currentAmount}`;
+      }
 
     });
 
-    /*const promoCodes: Array<IPromoCode> = [
+    const promoCodes: Array<IPromoCode> = [
       {
-        id: 1,
+        id: "1",
         percentDiscount: 10,
-        namePromo: "sale10"
+        namePromo: "10%"
       },
       {
-        id: 2,
+        id: "2",
         percentDiscount: 20,
-        namePromo: "sale20"
+        namePromo: "RSS"
+      },
+      {
+        id: "3",
+        percentDiscount: 5,
+        namePromo: "5sale"
       }
-    ]*/
+    ];
 
     promoCodeSubmit.addEventListener('click', function () {
       const currentAmountBlock = document.querySelector(".amount-to-be-paid") as HTMLDivElement;
       let currentAmount: string = currentAmountBlock.innerHTML;
       if (currentAmount) {
-        if (promoCodeInput.value === "20sale" || promoCodeInput.value === "10sale") {
-          showDiscount(currentAmount);
-          console.log(promoCodeArr)
-          amountToBePaid.style.textDecoration = "line-through";
-          createPromoCodeElem();
-        } 
+        promoCodes.forEach(item => {
+          if (promoCodeInput.value === item.namePromo) {
+            if (!promoCodeArr.includes(item.percentDiscount)) {
+              promoCodeArr.push(item.percentDiscount);
+              calculatingDiscountPrice();
+              createPromoCodeElem(item.percentDiscount);
+            }
+          } 
+        })
         promoCodeInput.value = "";
         getDiscount();
       };
@@ -258,27 +269,13 @@ export const createCartModal = () => {
       promoCodeArr.forEach(item => {
         discountSum = discountSum + item;
       });
-      console.log(discountSum);
     };
 
-    const deleteDiscount = (elem: HTMLDivElement) => {
-      promoCodeArr = promoCodeArr.filter(item => item !== Number(parseInt(elem.innerHTML)));
-      console.log(promoCodeArr)
-    }
-    const showDiscount = (currentAmount: string) => {
-      if (promoCodeInput.value === "20sale") {
-        promoCodeArr.push(20);
-        let sale = Number(currentAmount)-(Number(currentAmount)*0.2);
-        discountedPrice.innerHTML = `Discounted price: €${sale}`;
-      } else if (promoCodeInput.value === "10sale") {
-        promoCodeArr.push(10);
-        let sale = Number(currentAmount)-(Number(currentAmount)*0.1);
-        discountedPrice.innerHTML = `Discounted price: €${sale}`;
-      };
+    const deleteDiscount = (percentDiscount: number) => {
+      promoCodeArr = promoCodeArr.filter(item => item !== percentDiscount)
     }
 
-
-    const createPromoCodeElem = () => {
+    const createPromoCodeElem = (percentDiscount: number) => {
       const promoCodeElem = document.createElement("div");
       promoCodeElem.classList.add("promo-code-elem");
       const newPromoCode = document.createElement("p");
@@ -289,30 +286,34 @@ export const createCartModal = () => {
       promoCodeList.append(promoCodeElem);
       promoCodeElem.append(newPromoCode);
       promoCodeElem.append(deletePromoCode);
+
       if(deletePromoCode) {
         deletePromoCode.addEventListener("click", (event) => {
-        const clickedDiv = event.target as IButtonPlusMinus;
-        clickedDiv.closest(".promo-code-elem").remove();
-        deleteDiscount(newPromoCode);
+          const clickedDiv = event.target as IButtonPlusMinus;
+          clickedDiv.closest(".promo-code-elem").remove();
+          deleteDiscount(percentDiscount);
+          calculatingDiscountPrice();
         });
       };
     };
 
+    const calculatingDiscountPrice = () => {
+      const currentAmountBlock = document.querySelector(".amount-to-be-paid") as HTMLDivElement;
+      let currentAmount: string = currentAmountBlock.innerHTML;
+      let totalDiscountPercentage = promoCodeArr.reduce((acc, number) => acc + number, 0);
+      let newPrice = Number(currentAmount) - (Number(currentAmount) * totalDiscountPercentage * 0.01);
+      if (promoCodeArr.length > 0) {
+        amountToBePaid.style.textDecoration = "line-through";
+        discountedPrice.innerHTML = `Discounted price: €${newPrice.toFixed(2)}`;
+      } else {
+        amountToBePaid.style.textDecoration = "none";
+        discountedPrice.innerHTML = `Discounted price: €${""}`;
+      }
+    }
 
-  
- 
-    
-
-
-
-  console.log(cartProductsId)
   buyNowButton.addEventListener("click", () => {
       openPayModal(payWrapper);
   });
 
-  
-
   return shoppingCartWrapper;
 };
-
-
