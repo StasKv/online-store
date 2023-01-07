@@ -17,28 +17,28 @@ export const createPayModal = () => {
   inputName.classList.add("details-input-name");
   inputName.type = "text";
   inputName.placeholder = "Name";
-  inputName.required = true;
+  inputName.dataset.rule = "name";
   const inputPhoneContainer = document.createElement("div");
   inputPhoneContainer.classList.add("pay-input-container");
   const inputPhone = document.createElement("input");
   inputPhone.classList.add("details-input-phone");
   inputPhone.type = "text";
   inputPhone.placeholder = "Phone number";
-  inputPhone.required = true;
+  inputPhone.dataset.rule = "phone";
   const inputAddressContainer = document.createElement("div");
   inputAddressContainer.classList.add("pay-input-container");
   const inputAddress = document.createElement("input");
   inputAddress.classList.add("details-input-address");
   inputAddress.type = "text";
   inputAddress.placeholder = "Delivery address";
-  inputAddress.required = true;
+  inputAddress.dataset.rule = "address";
   const inputEmailContainer = document.createElement("div");
   inputEmailContainer.classList.add("pay-input-container");
   const inputEmail = document.createElement("input");
   inputEmail.classList.add("details-input-email");
   inputEmail.type = "email";
   inputEmail.placeholder = "E-mail";
-  inputEmail.required = true;
+  inputEmail.dataset.rule = "email";
   const cardDetailsContainer = document.createElement("div");
   cardDetailsContainer.classList.add("card-details-container");
   const cardDetailsTitle = document.createElement("h2");
@@ -53,7 +53,7 @@ export const createPayModal = () => {
   const cardNumberInput = document.createElement("input");
   cardNumberInput.type = "text";
   cardNumberInput.placeholder = "Card number";
-  cardNumberInput.required = true;
+  cardNumberInput.dataset.rule = "card-num";
   const cardOtherData = document.createElement("div");
   cardOtherData.classList.add("card-other-data");
   const dataValid = document.createElement("div");
@@ -64,7 +64,7 @@ export const createPayModal = () => {
   validInput.placeholder = "Valid Thru";
   validInput.maxLength = 5;
   validInput.minLength = 5;
-  validInput.required = true;
+  validInput.dataset.rule = "card-data";
   const dataCvv = document.createElement("div");
   dataCvv.innerHTML = "CVV:";
   dataCvv.classList.add("input-cvv-container");
@@ -72,7 +72,7 @@ export const createPayModal = () => {
   cvvInput.type = "number";
   cvvInput.placeholder = "Code";
   cvvInput.maxLength = 3;
-  cvvInput.required = true;
+  cvvInput.dataset.rule = "card-code";
   const payButton = document.createElement("button");
   payButton.classList.add("pay-submit-button");
   payButton.type = "submit";
@@ -110,66 +110,65 @@ export const createPayModal = () => {
 
   payClose.addEventListener("click", () => {
     payWrapper.style.display = "none";
-  })
+  });
 
+  let validName = /(^[A-Z]{1}[a-z|\'|\-]{2,} [A-Za-z|\'|\-]{3,}[A-Za-z|\s|\'|\-]{0,}$)|(^[А-Я]{1}[а-я|\'|\-]{2,14} [А-Яа-я|\'|\-]{3,}[А-Яа-я|\s|\'|\-]{0,}$)/;
+  let validPhone = /^\+{1}\d{9,}$/;
+  let validAddress = /^[A-Za-z|А-Яа-я|\'|\"|\-]{5,}[\s|\W]{1,2}[А-Яа-я|\w|\'|\"|\-]{5,}[\s|\W]{1,2}[А-Яа-я|\w|\'|\"|\-]{5,}[А-Яа-я|\w|\'|\"|\-|\s]{0,}$/;
+  let validEmail = /^\w+@\w+\.\w+$/;
+  let validCardNumber = /^[0-9]{16}$/;
+  let validCvv = /^[0-9]{3}$/;
 
+  const inputs = document.querySelectorAll("input[data-rule]") as NodeListOf<HTMLInputElement>;
+  
   inputName.addEventListener('blur', function() {
-    let value = this.value;
-    let check = /(^[A-Z]{1}[a-z|\'|\-]{2,} [A-Za-z|\'|\-]{3,}[A-Za-z|\s|\'|\-]{0,}$)|(^[А-Я]{1}[а-я|\'|\-]{2,14} [А-Яа-я|\'|\-]{3,}[А-Яа-я|\s|\'|\-]{0,}$)/.test(value);
-    if (check) {
+    if (validName.test(inputName.value)) {
       inputName.style.border = "2px solid green";
     } else {
       inputName.style.border = "2px solid red";
-    }
+    };
   });
 
   inputPhone.addEventListener('blur', function() {
-    let value = this.value;
-    let check = /^\+{1}\d{9,}$/.test(value);
-    if (check) {
+    if (validPhone.test(inputPhone.value)) {
       inputPhone.style.border = "2px solid green";
     } else {
       inputPhone.style.border = "2px solid red";
-    }
+    };
   });
 
   inputAddress.addEventListener('blur', function() {
-    let value = this.value;
-    let check = /^[A-Za-z|А-Яа-я|\'|\"|\-]{5,}[\s|\W]{1,2}[А-Яа-я|\w|\'|\"|\-]{5,}[\s|\W]{1,2}[А-Яа-я|\w|\'|\"|\-]{5,}[А-Яа-я|\w|\'|\"|\-|\s]{0,}$/.test(value);
-    if (check) {
+    if (validAddress.test(inputAddress.value)) {
       inputAddress.style.border = "2px solid green";
     } else {
       inputAddress.style.border = "2px solid red";
-    }
+    };
   });
 
   inputEmail.addEventListener('blur', function() {
-    let value = this.value;
-    let check = /^\w+@\w+\.\w+$/.test(value);
-     if (check) {
+     if (validEmail.test(inputEmail.value)) {
       inputEmail.style.border = "2px solid green";
     } else {
       inputEmail.style.border = "2px solid red";
-    }
+    };
   });
 
   cardNumberInput.addEventListener('blur', function() {
-    let value = this.value;
-    let check = /^[0-9]{16}$/.test(value);
-     if (check) {
+     if (validCardNumber.test(cardNumberInput.value)) {
       cardNumberInput.style.border = "2px solid green";
     } else {
       cardNumberInput.style.border = "2px solid red";
-    }
-    if (value[0] == "4") {
+    };
+
+    if (cardNumberInput.value[0] == "4") {
       cardLogo.src = 'https://cdn.visa.com/v2/assets/images/logos/visa/blue/logo.png';
-    }
-    if (value[0] == "5") {
-      cardLogo.src = 'http://localhost:8080/img/maestro-logo.png';
-    }
-    if (value[0] !== "4" && value[0] !== "5") {
-      cardLogo.src = 'http://localhost:8080/img/MasterCard_logo.png';
-    }6
+    };
+    if (cardNumberInput.value[0] == "5") {
+      cardLogo.src = 'https://w7.pngwing.com/pngs/698/964/png-transparent-maestro-debit-card-logo-mastercard-mastercard-text-trademark-payment.png';
+    };
+    if (cardNumberInput.value[0] !== "4" && cardNumberInput.value[0] !== "5") {
+      cardLogo.src = 'https://w7.pngwing.com/pngs/648/903/png-transparent-mastercard-logo-logo-payment-visa-mastercard-paypal-mastercard-icon-text-service-mobile-payment.png';
+    };
   });
 
   validInput.addEventListener('input', function () {
@@ -178,23 +177,37 @@ export const createPayModal = () => {
     this.value = val;
   });
 
-
   cvvInput.addEventListener('blur', function() {
-    let value = this.value;
-    let check = /^[0-9]{3}$/.test(value);
-    console.log(123)
-     if (check) {
+     if (validCvv.test(cvvInput.value)) {
       cvvInput.style.border = "2px solid green";
     } else {
       cvvInput.style.border = "2px solid red";
-    }
+    };
   });
 
-  payButton.addEventListener("click", function() {
-    message.style.display = "flex";
-  })
+  modalContent.addEventListener('submit', function (event) {
+    event.preventDefault()
 
+    const errors = modalContent.querySelectorAll('.error') as NodeListOf<HTMLDivElement>;
+    for (let i = 0; i < errors.length; i++) {
+      errors[i].remove()
+    };
+
+    for (let i = 0; i < inputs.length; i++) {
+      if (!inputs[i].value) {
+        let error = document.createElement('div')
+        error.className='error'
+        error.style.color = 'red'
+        error.innerHTML = 'error'
+        modalContent[i].parentElement!.insertBefore(error, inputs[i])
+      };
+
+      if (validName.test(inputName.value) && validPhone.test(inputPhone.value) && validAddress.test(inputAddress.value) && validEmail.test(inputEmail.value) && validCardNumber.test(cardNumberInput.value) && validCvv.test(cvvInput.value)) {
+       message.style.display = "flex";
+       setTimeout( 'location="index.html";', 3000 );
+      };
+    };
+  });
 
   return modalContent;
-}
-
+};

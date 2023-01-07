@@ -4,13 +4,11 @@ import { cartTotal, IProduct, productsItems, totalContent} from "../index";
 export let cartProductsId: Array<IProductInfo> = [];
 let itemsInCart: number;
 let cartTotalAmount: number;
-export interface IButtonPlusMinus extends EventTarget {
-  closest: any;
-  hasAttribute: any;
+export interface IButtonPlusMinus extends Element {
   dataset: Record<"action","plus" | "minus">
   }
 
-interface IProductInfo {
+export interface IProductInfo {
   brand: string;
   category: string;
   description: string;
@@ -135,21 +133,29 @@ window.addEventListener("click", (event: MouseEvent) => {
     const clickedDiv = event.target as IButtonPlusMinus;
     if (clickedDiv.dataset.action === "plus" || clickedDiv.dataset.action === "minus") {
       const counterWrapper = clickedDiv.closest(".counter-wrapper");
-      const counter = counterWrapper.querySelector("[data-counter]");
+      const counter = counterWrapper?.querySelector("[data-counter]");
+     if(counter) {
       if(clickedDiv.dataset.action === "plus") {
-        counter.innerHTML = ++counter.innerHTML;
+        let value = Number(counter.innerHTML);
+        ++value
+        counter.innerHTML = String(value)
+    };
+    if(clickedDiv.dataset.action === "minus") {
+      if(parseInt(counter.innerHTML) > 1) {
+        let value = Number(counter.innerHTML);
+        --value
+        counter.innerHTML = String(value)
       };
-      if(clickedDiv.dataset.action === "minus") {
-        if(parseInt(counter.innerHTML) > 1) {
-          counter.innerHTML = --counter.innerHTML;
-        };
-      };
+    };
+     }
     };
   };
 });
 
 export const deleteFromCart = (id: number) => {
   cartProductsId = cartProductsId.filter(item => item.id !== id);
+
+  
 }
 
 export const addToCart = (productInfo: IProductInfo, element: HTMLButtonElement) => {
