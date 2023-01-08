@@ -11,6 +11,7 @@ import { createStockFilter } from './components/filter-stock';
 import { setStockRangeValues } from './components/filter-stock';
 import { countProducts } from './components/count-products';
 import { setNoResults } from './components/set-no-results';
+import { chooseProduct } from './components/product-description-page';
 
 export interface IProduct {
   brand: string;
@@ -39,6 +40,134 @@ const startApplication = async () => {
   });
 };
 
+const checkSearchParam = (
+  value: string,
+  category: string,
+  brand: string,
+  price: number,
+  discount: number,
+  rating: number,
+  stock: number
+): boolean => {
+  if (value === '') {
+    console.log(value);
+    return true;
+  }
+  if (
+    category.includes(value) ||
+    brand.includes(value) ||
+    category.includes(value) ||
+    String(price).includes(value) ||
+    String(discount).includes(value) ||
+    String(rating).includes(value) ||
+    String(stock).includes(value)
+  ) {
+    return true;
+  }
+  return false;
+};
+
+const sortProducts = (array: Array<IProduct>) => {
+  const select = document.querySelector('.select') as HTMLInputElement;
+  const value = select.value;
+  console.log(value);
+  if (value === 'price-desc') {
+    array.sort((a, b) => b.price - a.price);
+  }
+  if (value === 'price-asc') {
+    array.sort((a, b) => a.price - b.price);
+  }
+  if (value === 'rating-desc') {
+    array.sort((a, b) => b.rating - a.rating);
+  }
+  if (value === 'rating-asc') {
+    array.sort((a, b) => a.rating - b.rating);
+  }
+}
+
+function sort() {
+  const select = document.querySelector('.select') as HTMLInputElement;
+  const value = select.value;
+  console.log(value);
+  const nodeList = document.querySelectorAll('.products-item') as NodeListOf<HTMLElement>;
+  const productsContainer = document.querySelector('.products-items') as HTMLElement;
+  let itemsArray: Array<HTMLElement> = [];
+  console.log(nodeList[0].parentNode)
+  nodeList.forEach((elem) => {
+    itemsArray.push(productsContainer.removeChild(elem));
+  });
+  if (value === 'price-asc') {
+  itemsArray.sort((nodeA, nodeB) => {
+    const elementA = nodeA.querySelector('.product-price') as HTMLElement;
+    const elementB = nodeB.querySelector('.product-price') as HTMLElement;
+    const textA: string = elementA.textContent !== null ? elementA.textContent : '0';
+    const textB: string  = elementB.textContent !== null ? elementB.textContent : '0';
+    const numberA = Number(textA);
+    const numberB = Number(textB);
+    if (numberA < numberB) return -1;
+    if (numberA > numberB) return 1;
+    return 0;
+    });
+    console.log(itemsArray);
+    itemsArray.forEach((elem) => {
+      productsContainer.appendChild(elem)
+    });
+  }
+  if (value === 'price-desc') {
+    itemsArray.sort((nodeA, nodeB) => {
+      const elementA = nodeA.querySelector('.product-price') as HTMLElement;
+      const elementB = nodeB.querySelector('.product-price') as HTMLElement;
+      const textA: string = elementA.textContent !== null ? elementA.textContent : '0';
+      const textB: string  = elementB.textContent !== null ? elementB.textContent : '0';
+      const numberA = Number(textA);
+      const numberB = Number(textB);
+      if (numberA > numberB) return -1;
+      if (numberA < numberB) return 1;
+      return 0;
+      });
+      console.log(itemsArray);
+      itemsArray.forEach((elem) => {
+        productsContainer.appendChild(elem)
+      });
+    }
+  if (value === 'rating-asc') {
+    itemsArray.sort((nodeA, nodeB) => {
+      const elementA = nodeA.querySelector('.product-rating') as HTMLElement;
+      const elementB = nodeB.querySelector('.product-rating') as HTMLElement;
+      const textA: string = elementA.textContent !== null ? elementA.textContent : '0';
+      const textB: string  = elementB.textContent !== null ? elementB.textContent : '0';
+      const numberA = Number(textA);
+      const numberB = Number(textB);
+      console.log(numberA, numberB);
+      if (numberA < numberB) return -1;
+      if (numberA > numberB) return 1;
+      return 0;
+      });
+      console.log(itemsArray);
+      itemsArray.forEach((elem) => {
+        productsContainer.appendChild(elem)
+      });
+  }
+  if (value === 'rating-desc') {
+    itemsArray.sort((nodeA, nodeB) => {
+      const elementA = nodeA.querySelector('.product-rating') as HTMLElement;
+      const elementB = nodeB.querySelector('.product-rating') as HTMLElement;
+      const textA: string = elementA.textContent !== null ? elementA.textContent : '0';
+      const textB: string  = elementB.textContent !== null ? elementB.textContent : '0';
+      const numberA = Number(textA);
+      const numberB = Number(textB);
+      console.log(numberA, numberB);
+      if (numberA > numberB) return -1;
+      if (numberA < numberB) return 1;
+      return 0;
+      });
+      console.log(itemsArray);
+      itemsArray.forEach((elem) => {
+        productsContainer.appendChild(elem)
+      });
+  }
+}
+
 const setInputsResult = async (): Promise<void> => {
   const inputElems = document.getElementsByClassName('input') as HTMLCollectionOf<HTMLInputElement>;
   const ProductsList = document.querySelector('.products-items') as HTMLElement;
@@ -50,6 +179,9 @@ const setInputsResult = async (): Promise<void> => {
   const stockInputMaxValue = document.querySelector('.input-stock-value-max') as HTMLElement;
   const stockInputLeft = document.querySelector('.input-stock-left') as HTMLInputElement;
   const stockInputRight = document.querySelector('.input-stock-right') as HTMLInputElement;
+  const searchInput = document.querySelector('.input-search') as HTMLInputElement;
+  const select = document.querySelector('.select') as HTMLInputElement;
+  select.addEventListener('change', sort);
   let inputArr: Array<HTMLInputElement> = Array.from(inputElems);
   let categoryArr: Array<string> = [];
   let brandArr: Array<string> = [];
@@ -90,15 +222,25 @@ const setInputsResult = async (): Promise<void> => {
       changedBrandArr = changedBrandArr.length === 0 ? brandArr : changedBrandArr;
       console.log(priceInputLeft.value, priceInputRight.value);
       const products = await getProducts();
+      sortProducts(products);
       products.forEach((elem) => {
         if (
           changedCategoryArr.includes(elem.category) &&
           changedBrandArr.includes(elem.brand) &&
           elem.price >= parseInt(priceInputLeft.value) &&
           elem.price <= parseInt(priceInputRight.value) &&
-          changedBrandArr.includes(elem.brand) &&
+          //changedBrandArr.includes(elem.brand) &&
           elem.stock >= parseInt(stockInputLeft.value) &&
-          elem.stock <= parseInt(stockInputRight.value)
+          elem.stock <= parseInt(stockInputRight.value) &&
+          checkSearchParam(
+            searchInput.value,
+            elem.category,
+            elem.brand,
+            elem.price,
+            elem.discountPercentage,
+            elem.rating,
+            elem.stock
+          )
         ) {
           createProductCard(elem);
         }
@@ -137,15 +279,25 @@ const setInputsResult = async (): Promise<void> => {
       ProductsList.removeChild(ProductsList.lastElementChild);
     }
     const products = await getProducts();
+    sortProducts(products);
     products.forEach((elem) => {
       if (
         changedCategoryArr.includes(elem.category) &&
         changedBrandArr.includes(elem.brand) &&
         elem.price >= parseInt(priceInputLeft.value) &&
         elem.price <= parseInt(priceInputRight.value) &&
-        changedBrandArr.includes(elem.brand) &&
+        //changedBrandArr.includes(elem.brand) &&
         elem.stock >= parseInt(stockInputLeft.value) &&
-        elem.stock <= parseInt(stockInputRight.value)
+        elem.stock <= parseInt(stockInputRight.value) &&
+        checkSearchParam(
+          searchInput.value,
+          elem.category,
+          elem.brand,
+          elem.price,
+          elem.discountPercentage,
+          elem.rating,
+          elem.stock
+        )
       ) {
         createProductCard(elem);
       }
@@ -163,15 +315,25 @@ const setInputsResult = async (): Promise<void> => {
       ProductsList.removeChild(ProductsList.lastElementChild);
     }
     const products = await getProducts();
+    sortProducts(products);
     products.forEach((elem) => {
       if (
         changedCategoryArr.includes(elem.category) &&
         changedBrandArr.includes(elem.brand) &&
         elem.price >= parseInt(priceInputLeft.value) &&
         elem.price <= parseInt(priceInputRight.value) &&
-        changedBrandArr.includes(elem.brand) &&
+        //changedBrandArr.includes(elem.brand) &&
         elem.stock >= parseInt(stockInputLeft.value) &&
-        elem.stock <= parseInt(stockInputRight.value)
+        elem.stock <= parseInt(stockInputRight.value) &&
+        checkSearchParam(
+          searchInput.value,
+          elem.category,
+          elem.brand,
+          elem.price,
+          elem.discountPercentage,
+          elem.rating,
+          elem.stock
+        )
       ) {
         createProductCard(elem);
       }
@@ -209,15 +371,25 @@ const setInputsResult = async (): Promise<void> => {
       ProductsList.removeChild(ProductsList.lastElementChild);
     }
     const products = await getProducts();
+    sortProducts(products);
     products.forEach((elem) => {
       if (
         changedCategoryArr.includes(elem.category) &&
         changedBrandArr.includes(elem.brand) &&
         elem.price >= parseInt(priceInputLeft.value) &&
         elem.price <= parseInt(priceInputRight.value) &&
-        changedBrandArr.includes(elem.brand) &&
+        //changedBrandArr.includes(elem.brand) &&
         elem.stock >= parseInt(stockInputLeft.value) &&
-        elem.stock <= parseInt(stockInputRight.value)
+        elem.stock <= parseInt(stockInputRight.value) &&
+        checkSearchParam(
+          searchInput.value,
+          elem.category,
+          elem.brand,
+          elem.price,
+          elem.discountPercentage,
+          elem.rating,
+          elem.stock
+        )
       ) {
         createProductCard(elem);
       }
@@ -235,21 +407,72 @@ const setInputsResult = async (): Promise<void> => {
       ProductsList.removeChild(ProductsList.lastElementChild);
     }
     const products = await getProducts();
+    sortProducts(products);
     products.forEach((elem) => {
       if (
         changedCategoryArr.includes(elem.category) &&
         changedBrandArr.includes(elem.brand) &&
         elem.price >= parseInt(priceInputLeft.value) &&
         elem.price <= parseInt(priceInputRight.value) &&
-        changedBrandArr.includes(elem.brand) &&
+        //changedBrandArr.includes(elem.brand) &&
         elem.stock >= parseInt(stockInputLeft.value) &&
-        elem.stock <= parseInt(stockInputRight.value)
+        elem.stock <= parseInt(stockInputRight.value) &&
+        checkSearchParam(
+          searchInput.value,
+          elem.category,
+          elem.brand,
+          elem.price,
+          elem.discountPercentage,
+          elem.rating,
+          elem.stock
+        )
       ) {
         createProductCard(elem);
       }
     });
     countProducts();
     setPriceRangeValues();
+    setNoResults();
+  });
+
+  searchInput.addEventListener('keyup', async () => {
+    const minPrice = parseInt(priceInputLeft.min);
+    const maxPrice = parseInt(priceInputLeft.max);
+    priceInputLeft.value = `${minPrice}`;
+    priceInputRight.value = `${maxPrice}`;
+    const minStock = parseInt(stockInputLeft.min);
+    const maxStock = parseInt(stockInputLeft.max);
+    stockInputLeft.value = `${minStock}`;
+    stockInputRight.value = `${maxStock}`;
+    while (ProductsList.lastElementChild) {
+      ProductsList.removeChild(ProductsList.lastElementChild);
+    }
+    const products = await getProducts();
+    sortProducts(products);
+    products.forEach((elem) => {
+      if (
+        changedCategoryArr.includes(elem.category) &&
+        changedBrandArr.includes(elem.brand) &&
+        elem.price >= parseInt(priceInputLeft.value) &&
+        elem.price <= parseInt(priceInputRight.value) &&
+        elem.stock >= parseInt(stockInputLeft.value) &&
+        elem.stock <= parseInt(stockInputRight.value) &&
+        checkSearchParam(
+          searchInput.value,
+          elem.category,
+          elem.brand,
+          elem.price,
+          elem.discountPercentage,
+          elem.rating,
+          elem.stock
+        )
+      ) {
+        createProductCard(elem);
+      }
+    });
+    countProducts();
+    setPriceRangeValues();
+    setStockRangeValues();
     setNoResults();
   });
 };
@@ -262,4 +485,5 @@ startApplication()
   .then(createPriceFilter)
   .then(createStockFilter)
   .then(setInputsResult)
-  .then(countProducts);
+  .then(countProducts)
+  .then(chooseProduct);
