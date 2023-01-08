@@ -1,7 +1,15 @@
-.main-wrapper {
-  display: flex;
+body {
+  background: url(../img/background.webp);
+  background-size: cover;
+}
+
+.main {
   margin-top: 0.5%;
   margin-bottom: 0.5%;
+}
+
+.main-wrapper {
+  display: flex;
   gap: 5px;
 }
 
@@ -15,12 +23,8 @@
 }
 
 .products {
+  @extend %wrapper;
   width: 74%;
-  background: #b0b4b9;
-  border: 2px solid $gray;
-  border-radius: 0.7rem;
-  overflow: hidden;
-  padding: 2px;
 }
 
 .products-sort {
@@ -30,9 +34,7 @@
 
 .products-sort,
 .products-items {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  @extend %flex-container;
   width: 100%;
   padding: 5px;
   border: 2px solid $sky;
@@ -40,30 +42,20 @@
 }
 
 .select {
+  @extend %input-style;
   outline: 0;
-  border: 0;
-  padding: 0 1em;
   color: #fff;
-  background: $gradient;
-  cursor: pointer;
-  border-radius: 1rem;
   color: $gray;
-  text-align: center;
 }
 
 .found {
+  @extend %text-style;
   color: $gray;
 }
 
 .search-bar {
   input {
-    background: $gradient;
-    color: $gray;
-    border-radius: 2rem;
-    padding: 0.2rem;
-    outline: none;
-    font-size: 80%;
-    text-align: center;
+    @extend %input-style;
   }
 }
 
@@ -137,4 +129,22 @@
     font-size: 12px;
   }
 
+}
+
+.counter-wrapper {
+  @extend %flex-center;
+}
+
+.product-card-bnt-left,
+.product-card-bnt-right {
+  @extend %button-circle;
+  @extend %flex-center;
+  border: $borderGray;
+}
+
+.product-card-counter {
+  text-shadow: $textshadow;
+  background-color: $semitransparent;
+  border-radius: 90px;
+  color: #fff;
 }
