@@ -483,7 +483,15 @@ const setInputsResult = async (): Promise<void> => {
     setFoundResult();
   });
 
-  searchInput.addEventListener('keyup', async () => {
+  const debounce = (fn: Function, ms: number) => {
+    let timeout: ReturnType<typeof setTimeout>;
+    return function (this: void, ...args: []) {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => fn.apply(this, args), ms);
+    };
+  };
+
+  const setSearchProducts = async () => {
     const minPrice = parseInt(priceInputLeft.min);
     const maxPrice = parseInt(priceInputLeft.max);
     priceInputLeft.value = `${minPrice}`;
@@ -525,7 +533,9 @@ const setInputsResult = async (): Promise<void> => {
     setStockRangeValues();
     setNoResults();
     setFoundResult();
-  });
+  }
+  const debouceSearch = debounce(setSearchProducts, 1100);
+  searchInput.addEventListener('keyup', debouceSearch);
 };
 
 startApplication()
