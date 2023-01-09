@@ -23,6 +23,23 @@ export interface IProductInfo {
   counter: string;
 }
 
+export const getProductInfo = (counter: string, productData: IProduct) => {
+  return {
+    brand: productData.brand,
+    category: productData.category,
+    description: productData.description,
+    discountPercentage: productData.discountPercentage,
+    id: productData.id,
+    images: productData.images,
+    price: productData.price,
+    rating: productData.rating,
+    stock: productData.stock,
+    thumbnail: productData.thumbnail,
+    title: productData.title,
+    counter,
+  };
+};
+
 export const createProductCard = (productData: IProduct) => {
   const productsItem = document.createElement("div");
   productsItem.classList.add("products-item");
@@ -81,6 +98,9 @@ export const createProductCard = (productData: IProduct) => {
   addToCartButton.classList.add("add-to-cart");
   addToCartButton.dataset.id = String(productData.id);
   addToCartButton.innerHTML = "Add to cart";
+  const detailsButton = document.createElement("button");
+  detailsButton.classList.add("details-product");
+  detailsButton.innerHTML = "Details";
   const counterWrapper = document.createElement("div");
   counterWrapper.classList.add("counter-wrapper");
   const minusButton = document.createElement("div");
@@ -121,34 +141,18 @@ export const createProductCard = (productData: IProduct) => {
   liStock.append(spanProductStock);
   productsItem.append(cardButtons);
   cardButtons.append(addToCartButton);
+  cardButtons.append(detailsButton);
   cardButtons.append(counterWrapper);
   counterWrapper.append(minusButton);
   counterWrapper.append(counterButton);
   counterWrapper.append(plusButton);
-
-  const getProductInfo = (counter: string) => {
-    return {
-      brand: productData.brand,
-      category: productData.category,
-      description: productData.description,
-      discountPercentage: productData.discountPercentage,
-      id: productData.id,
-      images: productData.images,
-      price: productData.price,
-      rating: productData.rating,
-      stock: productData.stock,
-      thumbnail: productData.thumbnail,
-      title: productData.title,
-      counter,
-    }
-  }
   
   addToCartButton.addEventListener("click", () => {
     if(addToCartButton.innerHTML === "Add to cart") {
-      addToCart(getProductInfo(counterWrapper.querySelector("[data-counter]")?.innerHTML!), addToCartButton);
+      addToCart(getProductInfo(counterWrapper.querySelector("[data-counter]")?.innerHTML!, productData), addToCartButton);
       counterWrapper.style.display = "none";
     } else if (addToCartButton.innerHTML === "Drop from cart") {
-      dropFromCart(getProductInfo(counterWrapper.querySelector("[data-counter]")?.innerHTML!), addToCartButton);
+      dropFromCart(getProductInfo(counterWrapper.querySelector("[data-counter]")?.innerHTML!, productData), addToCartButton);
       counterWrapper.style.display = "flex";
     };
   });
@@ -156,27 +160,26 @@ export const createProductCard = (productData: IProduct) => {
   return productsItem;
 };
 
-
 window.addEventListener("click", (event: MouseEvent) => {
   if (event.target) {
     const clickedDiv = event.target as IButtonPlusMinus;
     if (clickedDiv.dataset.action === "plus" || clickedDiv.dataset.action === "minus") {
       const counterWrapper = clickedDiv.closest(".counter-wrapper");
       const counter = counterWrapper?.querySelector("[data-counter]");
-     if(counter) {
-      if(clickedDiv.dataset.action === "plus") {
-        let value = Number(counter.innerHTML);
-        ++value
-        counter.innerHTML = String(value)
-    };
-    if(clickedDiv.dataset.action === "minus") {
-      if(parseInt(counter.innerHTML) > 1) {
-        let value = Number(counter.innerHTML);
-        --value
-        counter.innerHTML = String(value)
-      };
-    };
-     }
+      if(counter) {
+        if(clickedDiv.dataset.action === "plus") {
+          let value = Number(counter.innerHTML);
+          ++value;
+          counter.innerHTML = String(value);
+        };
+        if(clickedDiv.dataset.action === "minus") {
+          if(parseInt(counter.innerHTML) > 1) {
+            let value = Number(counter.innerHTML);
+            --value;
+            counter.innerHTML = String(value);
+          };
+        };
+      }
     };
   };
 });
@@ -187,19 +190,21 @@ export const deleteFromCart = (id: number) => {
 
 }
 
-export const addToCart = (productInfo: IProductInfo, element: HTMLButtonElement) => {
+export const addToCart = (productInfo: IProductInfo, element?: HTMLButtonElement) => {
   cartProductsId.push(productInfo);
   calculatingAmountInCart();
   calculatingItemsInCart();
-  element.innerHTML = "Drop from cart";
-}
+  if(Boolean(element)) {
+    element!.innerHTML = "Drop from cart";
+  };
+};
 
 export const dropFromCart = (productInfo: IProductInfo, element: HTMLButtonElement) => {
   cartProductsId = cartProductsId.filter(item => item.id !== productInfo.id);
   calculatingAmountInCart();
   calculatingItemsInCart();
   element.innerHTML = "Add to cart";
-}
+};
 
 
 export const calculatingAmountInCart = () => {

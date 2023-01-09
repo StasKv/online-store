@@ -2,15 +2,15 @@
 @import 'abstracts/mixins';
 @import 'abstracts/placeholders';
 @import 'base/base';
-@import 'header';
-@import 'footer';
-@import 'body';
+@import 'components/header';
+@import 'components/footer';
+@import 'components/body';
 @import 'components/category-filter';
 @import 'components/brand-filter';
 @import 'components/range-filters';
 @import 'components/product-descr-page';
-@import 'shopping-cart';
-@import 'pay-modal';
+@import 'components/shopping-cart';
+@import 'components/pay-modal';
 @import 'components/reset-button';
 
 * {

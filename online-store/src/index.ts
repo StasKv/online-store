@@ -43,47 +43,50 @@ export const getProducts = async (): Promise<Array<IProduct>> => {
 export let products: Array<IProduct>;
 export let cartTotal = document.querySelector(".cart-total") as HTMLSpanElement;
 export const shoppingCart = document.querySelector(".shopping-cart") as HTMLDivElement;
-const mainWrapper = document.querySelector(".main-wrapper") as HTMLDivElement;
+export const mainWrapper = document.querySelector(".main-wrapper") as HTMLDivElement;
 export const productsItems = document.querySelector(".products-items") as HTMLDivElement;
 export const main = document.querySelector(".main") as HTMLDivElement;
 export const totalContent = document.querySelector(".total-content") as HTMLDivElement;
 export const payWrapper = document.createElement("div");
-export const headerLogo = document.querySelector(".header-logo");
+export const headerLogo = document.querySelector(".header-logo") as HTMLDivElement;
+export const descriptionProduct = document.querySelector(".main-description-wrapper") as HTMLDivElement;
 
 export const addHandlerToElement = (eventName: string, element: Element, handler: () => void) => {
-    element.addEventListener(eventName, handler);
+  element.addEventListener(eventName, handler);
 }
 export const removeHandlerFromElement = (eventName: string, element: Element, handler: () => void) => {
-    element.removeEventListener(eventName, handler);
+  element.removeEventListener(eventName, handler);
 }
 
 const handlerShoppingCart = () => {
   openCartModal(mainWrapper);
   createCartModal();
+  const descriptionPageContent = document.querySelector(".main-description-wrapper") as HTMLDivElement;
+  if (descriptionPageContent) {
+    descriptionPageContent.remove();
+  }
 }
 export const removeHandlerFromShoppingCart = () => {
   removeHandlerFromElement("click", shoppingCart, handlerShoppingCart);
 }
 const startApplication = async () => {
-    products = await getProducts();
-
-    products.forEach(item => {
-        createProductCard(item);
-
-    });
-    addHandlerToElement("click", shoppingCart, handlerShoppingCart);
-    createPayModal();
-}
+  products = await getProducts();
+  products.forEach(item => {
+    createProductCard(item);
+  });
+  addHandlerToElement("click", shoppingCart, handlerShoppingCart);
+  createPayModal();
+};
 startApplication();
 
 headerLogo?.addEventListener("click", () => {
     const shoppingCartWrapper = document.querySelector(".shopping-cart-wrapper");
     if (shoppingCartWrapper) {
-        shoppingCartWrapper.remove();
-        mainWrapper.style.display = "flex";
-    }
+      shoppingCartWrapper.remove();
+      mainWrapper.style.display = "flex";
+    };
     addHandlerToElement("click", shoppingCart, handlerShoppingCart);
-})
+});
 
 const checkSearchParam = (
   value: string,
@@ -256,7 +259,6 @@ const setInputsResult = async (): Promise<void> => {
       }
       changedCategoryArr = changedCategoryArr.length === 0 ? categoryArr : changedCategoryArr;
       changedBrandArr = changedBrandArr.length === 0 ? brandArr : changedBrandArr;
-      console.log(priceInputLeft.value, priceInputRight.value);
       const products = await getProducts();
       sortProducts(products);
       products.forEach((elem) => {

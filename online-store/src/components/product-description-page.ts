@@ -1,16 +1,9 @@
-import { getProducts } from '../index';
+import { getProducts, IProduct, mainWrapper, payWrapper } from '../index';
+import { addToCart, dropFromCart, IProductInfo, getProductInfo, cartProductsId } from './product-card';
+import { createCartModal, openCartModal, openPayModal } from './shopping-cart';
 
-const generateDescrPage = (
-  title: string,
-  category: string,
-  brand: string,
-  description: string,
-  discount: number,
-  rating: number,
-  stock: number,
-  price: number,
-  images: Array<string>
-) => {
+const generateDescrPage = ( product: IProduct) => {
+  const {title, category, brand, description, discountPercentage: discount, rating, stock, price, images, id, thumbnail} = product;
   const mainPage = document.querySelector('.main') as HTMLElement;
   const mainPageContent = document.querySelector('.main-wrapper') as HTMLElement;
   const descrPageContent = document.createElement('div') as HTMLElement;
@@ -41,7 +34,7 @@ const generateDescrPage = (
   const productInfoCategoryTextBlock = document.createElement('div') as HTMLElement;
   const productBuyBlock = document.createElement('div') as HTMLElement;
   const productPriceBlock = document.createElement('div') as HTMLElement;
-  const productAddCartButton = document.createElement('div') as HTMLElement;
+  const productAddCartButton = document.createElement('button') as HTMLButtonElement;
   const productBuyButton = document.createElement('div') as HTMLElement;
 
   mainPageContent.style.display = `none`;
@@ -122,8 +115,16 @@ const generateDescrPage = (
   productInfoCategoryTitleBlock.textContent = `Category:`;
   productInfoCategoryTextBlock.textContent = `${category}`;
   productPriceBlock.textContent = `€${price}`;
-  productAddCartButton.textContent = `ADD TO CART`;
+  productAddCartButton.textContent = `Add to cart`;
   productBuyButton.textContent = `BUY NOW`;
+
+  cartProductsId.forEach(item => {
+    if (item.id === id) {
+      productAddCartButton.innerHTML = "Drop from cart";
+    } else {
+      productAddCartButton.textContent = `Add to cart`;
+    }
+  })
 
   images.forEach((elem) => {
     const productPicture = document.createElement('img') as HTMLImageElement;
@@ -141,7 +142,6 @@ const generateDescrPage = (
   productPhotoBlock.append(productMainPicture);
 
   const productPictureCollection = productPhotosBlock.querySelectorAll('img') as NodeListOf<HTMLImageElement>;
-  console.log(productPictureCollection);
   productPictureCollection.forEach((elem) => {
     elem.addEventListener('click', () => {
       productMainPicture.src = elem.currentSrc;
@@ -152,10 +152,28 @@ const generateDescrPage = (
   headerLogo.addEventListener('click', () => {
     mainPageContent.style.display = `flex`;
     descrPageContent.remove();
-  })
+  });
 
-  //productAddCartButton.addEventListener('click', )
-  //productBuyButton.addEventListener('click', )
+  productAddCartButton.addEventListener("click", () => {
+    if (productAddCartButton.innerHTML === "Add to cart") {
+      addToCart(getProductInfo("1", product), productAddCartButton);
+    } else if (productAddCartButton.innerHTML === "Drop from cart") {
+      dropFromCart(getProductInfo("1", product), productAddCartButton);
+    };
+  });
+
+  productBuyButton.addEventListener('click', () => {
+    const foundProduct = cartProductsId.find(item => item.id === id);
+
+    if(!Boolean(foundProduct)) {
+        addToCart(getProductInfo("1", product))
+    };
+
+    descrPageContent.remove();
+    openCartModal(mainWrapper);
+    createCartModal();
+    openPayModal(payWrapper);
+  });
 };
 
 export const chooseProduct = async () => {
@@ -169,17 +187,7 @@ export const chooseProduct = async () => {
       const products = await getProducts();
       products.forEach((element) => {
         if (element.title === productDescription) {
-          generateDescrPage(
-            element.title,
-            element.category,
-            element.brand,
-            element.description,
-            element.discountPercentage,
-            element.rating,
-            element.stock,
-            element.price,
-            element.images
-          );
+          generateDescrPage(element);
         }
       });
     });

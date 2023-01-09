@@ -186,20 +186,20 @@ export const createPayModal = () => {
   });
 
   modalContent.addEventListener('submit', function (event) {
-    event.preventDefault()
+    event.preventDefault();
 
     const errors = modalContent.querySelectorAll('.error') as NodeListOf<HTMLDivElement>;
     for (let i = 0; i < errors.length; i++) {
-      errors[i].remove()
+      errors[i].remove();
     };
 
     for (let i = 0; i < inputs.length; i++) {
       if (!inputs[i].value) {
-        let error = document.createElement('div')
-        error.className='error'
-        error.style.color = 'red'
-        error.innerHTML = 'error'
-        modalContent[i].parentElement!.insertBefore(error, inputs[i])
+        let error = document.createElement('div');
+        error.className='error';
+        error.style.color = 'red';
+        error.innerHTML = 'error';
+        modalContent[i].parentElement!.insertBefore(error, inputs[i]);
       };
 
       if (validName.test(inputName.value) && validPhone.test(inputPhone.value) && validAddress.test(inputAddress.value) && validEmail.test(inputEmail.value) && validCardNumber.test(cardNumberInput.value) && validCvv.test(cvvInput.value)) {

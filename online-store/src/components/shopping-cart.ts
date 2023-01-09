@@ -26,7 +26,7 @@ const promoCodes: Array<IPromoCode> = [
 ];
 
 let promoCodeArr: Array<number> = [];
-let notes: Array<IProductInfo>;
+let notes: Array<IProductInfo> = [];
 let itemsPerPage: number = 3;
 
 export const openCartModal = (mainWrapper: HTMLDivElement) => {
