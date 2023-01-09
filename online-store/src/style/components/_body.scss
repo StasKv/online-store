@@ -1,0 +1,150 @@
+body {
+  background: url(../img/background.webp);
+  background-size: cover;
+}
+
+.main {
+  margin-top: 0.5%;
+  margin-bottom: 0.5%;
+}
+
+.main-wrapper {
+  display: flex;
+  gap: 5px;
+}
+
+.filters {
+  width: 25%;
+  background: #b0b4b9;
+  border: 1px solid $gray;
+  border-radius: 0.7rem;
+  padding: .5%;
+  height: fit-content;
+}
+
+.products {
+  @extend %wrapper;
+  width: 74%;
+}
+
+.products-sort {
+  height: 40px;
+  margin-bottom: .5%;
+}
+
+.products-sort,
+.products-items {
+  @extend %flex-container;
+  width: 100%;
+  padding: 5px;
+  border: 2px solid $sky;
+  border-radius: 0.7rem;;
+}
+
+.select {
+  @extend %input-style;
+  outline: 0;
+  color: #fff;
+  color: $gray;
+}
+
+.found {
+  @extend %text-style;
+  color: $gray;
+}
+
+.search-bar {
+  input {
+    @extend %input-style;
+  }
+}
+
+.products-items {
+  padding: .5%;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.products-item {
+  width: 200px;
+  height: 200px;
+  background-size: cover;
+  border-radius: 0.3rem;
+  margin: 2px;
+  position: relative;
+}
+
+.card-buttons {
+  position: absolute;
+  bottom: 5px;
+  width: 100%;
+  height: 15%;
+  display: flex;
+  justify-content: space-evenly;
+  
+  button {
+    background: $gradient;
+    border: 1px solid $gray;
+    border-radius: 0.3rem;
+    padding-left: 2%;
+    padding-right: 2%;
+    font-size: 80%;
+    cursor: pointer;
+    color: $gray;
+  }
+
+  button:active {
+    background: $liteGradient;
+  }
+
+}
+
+.item-title {
+  width: 100%;
+  text-align: center;
+  background: $gradient;
+  padding: 1%;
+  font-size: 90%;
+  text-align: center;
+  border-bottom: 1px solid $gray;
+  white-space: nowrap;
+  color: $gray;
+  border-radius: 0.3rem 0.3rem 0 0;
+}
+
+.description-info {
+  width: 55%;
+  background-color: $headcolor;
+  opacity: 0.8;
+  border-radius: 0 0 0.4rem;
+  border-bottom: 1px solid $gray;
+  border-right: 1px solid $gray;
+  padding: 1%;
+}
+
+.info-items {
+
+  span {
+    color: $dark;
+    font-size: 12px;
+  }
+
+}
+
+.counter-wrapper {
+  @extend %flex-center;
+}
+
+.product-card-bnt-left,
+.product-card-bnt-right {
+  @extend %button-circle;
+  @extend %flex-center;
+  border: $borderGray;
+}
+
+.product-card-counter {
+  text-shadow: $textshadow;
+  background-color: $semitransparent;
+  border-radius: 90px;
+  color: #fff;
+}

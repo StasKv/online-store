@@ -1,0 +1,22 @@
+@import 'abstracts/constants';
+@import 'abstracts/mixins';
+@import 'abstracts/placeholders';
+@import 'base/base';
+@import 'components/header';
+@import 'components/footer';
+@import 'components/body';
+@import 'components/category-filter';
+@import 'components/brand-filter';
+@import 'components/range-filters';
+@import 'components/product-descr-page';
+@import 'components/shopping-cart';
+@import 'components/pay-modal';
+@import 'components/reset-button';
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+  color: $gray;
+}
