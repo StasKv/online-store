@@ -1,6 +1,16 @@
 import { getProducts } from '../index';
 
-const generateDescrPage = (title: string, category: string, brand: string, description: string, discount: number, rating: number, stock: number, price: number) => {
+const generateDescrPage = (
+  title: string,
+  category: string,
+  brand: string,
+  description: string,
+  discount: number,
+  rating: number,
+  stock: number,
+  price: number,
+  images: Array<string>
+) => {
   const mainPage = document.querySelector('.main') as HTMLElement;
   const mainPageContent = document.querySelector('.main-wrapper') as HTMLElement;
   const descrPageContent = document.createElement('div') as HTMLElement;
@@ -74,7 +84,7 @@ const generateDescrPage = (title: string, category: string, brand: string, descr
   fourColumnBlock.append(productPhotosBlock);
   fourColumnBlock.append(productPhotoBlock);
   fourColumnBlock.append(productInfoBlock);
-  fourColumnBlock.append(productBuyBlock)
+  fourColumnBlock.append(productBuyBlock);
   productInfoBlock.append(productInfoDescrBlock);
   productInfoDescrBlock.append(productInfoDescrTitleBlock);
   productInfoDescrBlock.append(productInfoDescrTextBlock);
@@ -114,25 +124,64 @@ const generateDescrPage = (title: string, category: string, brand: string, descr
   productPriceBlock.textContent = `€${price}`;
   productAddCartButton.textContent = `ADD TO CART`;
   productBuyButton.textContent = `BUY NOW`;
-}
+
+  images.forEach((elem) => {
+    const productPicture = document.createElement('img') as HTMLImageElement;
+    productPicture.style.width = `80px`;
+    productPicture.style.height = `80px`;
+    productPicture.style.marginBottom = `10px`;
+    productPicture.style.borderRadius = `5px`;
+    productPicture.src = `${elem}`;
+    productPhotosBlock.append(productPicture);
+  });
+
+  const productMainPicture = document.createElement('img') as HTMLImageElement;
+  productMainPicture.classList.add('product-main-picture');
+  productMainPicture.src = `${images[0]}`;
+  productPhotoBlock.append(productMainPicture);
+
+  const productPictureCollection = productPhotosBlock.querySelectorAll('img') as NodeListOf<HTMLImageElement>;
+  console.log(productPictureCollection);
+  productPictureCollection.forEach((elem) => {
+    elem.addEventListener('click', () => {
+      productMainPicture.src = elem.currentSrc;
+    });
+  });
+
+  const headerLogo = document.querySelector('.header-logo-container') as HTMLElement;
+  headerLogo.addEventListener('click', () => {
+    mainPageContent.style.display = `flex`;
+    descrPageContent.remove();
+  })
+
+  //productAddCartButton.addEventListener('click', )
+  //productBuyButton.addEventListener('click', )
+};
 
 export const chooseProduct = async () => {
   const detailsButtons = document.querySelectorAll('.details-product');
-  console.log(detailsButtons)
-  detailsButtons.forEach((elem) =>{
+  detailsButtons.forEach((elem) => {
     elem.addEventListener('click', async () => {
       const parentElem = elem.parentNode;
-      const productElem = parentElem !== null ? parentElem.parentNode: null;
+      const productElem = parentElem !== null ? parentElem.parentNode : null;
       const productDescriptionElem = productElem !== null ? productElem.querySelector('.item-title') : null;
       const productDescription = productDescriptionElem !== null ? productDescriptionElem.textContent : null;
       const products = await getProducts();
       products.forEach((element) => {
         if (element.title === productDescription) {
-          console.log(element)
-          generateDescrPage(element.title, element.category, element.brand, element.description, element.discountPercentage, element.rating, element.stock, element.price)
+          generateDescrPage(
+            element.title,
+            element.category,
+            element.brand,
+            element.description,
+            element.discountPercentage,
+            element.rating,
+            element.stock,
+            element.price,
+            element.images
+          );
         }
       });
-    })
-  })
-}
-
+    });
+  });
+};

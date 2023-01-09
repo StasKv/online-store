@@ -3,6 +3,8 @@ import './style/style.scss';
 import { createProductCard } from './components/product-card';
 import { getArrayOfCategory } from './components/filter-category';
 import { createCategoryFilter } from './components/filter-category';
+import { createResetFiltersButton } from './components/button-remove-all-filters';
+import { resetFilters } from './components/button-remove-all-filters';
 import { getArrayOfBrand } from './components/filter-brand';
 import { createBrandFilter } from './components/filter-brand';
 import { createPriceFilter } from './components/filter-price';
@@ -12,6 +14,7 @@ import { setStockRangeValues } from './components/filter-stock';
 import { countProducts } from './components/count-products';
 import { setNoResults } from './components/set-no-results';
 import { chooseProduct } from './components/product-description-page';
+import { setFoundResult } from './components/found-result';
 
 export interface IProduct {
   brand: string;
@@ -47,16 +50,16 @@ const checkSearchParam = (
   price: number,
   discount: number,
   rating: number,
-  stock: number
+  stock: number,
+  title: string
 ): boolean => {
   if (value === '') {
-    console.log(value);
     return true;
   }
   if (
-    category.includes(value) ||
-    brand.includes(value) ||
-    category.includes(value) ||
+    category.toLowerCase().includes(value.toLowerCase()) ||
+    brand.toLowerCase().includes(value.toLowerCase()) ||
+    title.toLowerCase().includes(value.toLowerCase()) ||
     String(price).includes(value) ||
     String(discount).includes(value) ||
     String(rating).includes(value) ||
@@ -70,7 +73,6 @@ const checkSearchParam = (
 const sortProducts = (array: Array<IProduct>) => {
   const select = document.querySelector('.select') as HTMLInputElement;
   const value = select.value;
-  console.log(value);
   if (value === 'price-desc') {
     array.sort((a, b) => b.price - a.price);
   }
@@ -88,11 +90,9 @@ const sortProducts = (array: Array<IProduct>) => {
 function sort() {
   const select = document.querySelector('.select') as HTMLInputElement;
   const value = select.value;
-  console.log(value);
   const nodeList = document.querySelectorAll('.products-item') as NodeListOf<HTMLElement>;
   const productsContainer = document.querySelector('.products-items') as HTMLElement;
   let itemsArray: Array<HTMLElement> = [];
-  console.log(nodeList[0].parentNode)
   nodeList.forEach((elem) => {
     itemsArray.push(productsContainer.removeChild(elem));
   });
@@ -108,7 +108,6 @@ function sort() {
     if (numberA > numberB) return 1;
     return 0;
     });
-    console.log(itemsArray);
     itemsArray.forEach((elem) => {
       productsContainer.appendChild(elem)
     });
@@ -125,7 +124,6 @@ function sort() {
       if (numberA < numberB) return 1;
       return 0;
       });
-      console.log(itemsArray);
       itemsArray.forEach((elem) => {
         productsContainer.appendChild(elem)
       });
@@ -138,12 +136,10 @@ function sort() {
       const textB: string  = elementB.textContent !== null ? elementB.textContent : '0';
       const numberA = Number(textA);
       const numberB = Number(textB);
-      console.log(numberA, numberB);
       if (numberA < numberB) return -1;
       if (numberA > numberB) return 1;
       return 0;
       });
-      console.log(itemsArray);
       itemsArray.forEach((elem) => {
         productsContainer.appendChild(elem)
       });
@@ -156,12 +152,10 @@ function sort() {
       const textB: string  = elementB.textContent !== null ? elementB.textContent : '0';
       const numberA = Number(textA);
       const numberB = Number(textB);
-      console.log(numberA, numberB);
       if (numberA > numberB) return -1;
       if (numberA < numberB) return 1;
       return 0;
       });
-      console.log(itemsArray);
       itemsArray.forEach((elem) => {
         productsContainer.appendChild(elem)
       });
@@ -181,7 +175,6 @@ const setInputsResult = async (): Promise<void> => {
   const stockInputRight = document.querySelector('.input-stock-right') as HTMLInputElement;
   const searchInput = document.querySelector('.input-search') as HTMLInputElement;
   const select = document.querySelector('.select') as HTMLInputElement;
-  select.addEventListener('change', sort);
   let inputArr: Array<HTMLInputElement> = Array.from(inputElems);
   let categoryArr: Array<string> = [];
   let brandArr: Array<string> = [];
@@ -195,6 +188,7 @@ const setInputsResult = async (): Promise<void> => {
   }
   let changedCategoryArr: Array<string> = categoryArr;
   let changedBrandArr: Array<string> = brandArr;
+  select.addEventListener('change', sort);
   for (let item of inputArr) {
     item.addEventListener('click', async () => {
       const minPrice = parseInt(priceInputLeft.min);
@@ -229,7 +223,6 @@ const setInputsResult = async (): Promise<void> => {
           changedBrandArr.includes(elem.brand) &&
           elem.price >= parseInt(priceInputLeft.value) &&
           elem.price <= parseInt(priceInputRight.value) &&
-          //changedBrandArr.includes(elem.brand) &&
           elem.stock >= parseInt(stockInputLeft.value) &&
           elem.stock <= parseInt(stockInputRight.value) &&
           checkSearchParam(
@@ -239,16 +232,19 @@ const setInputsResult = async (): Promise<void> => {
             elem.price,
             elem.discountPercentage,
             elem.rating,
-            elem.stock
+            elem.stock,
+            elem.title
           )
         ) {
           createProductCard(elem);
         }
       });
+      chooseProduct();
       countProducts();
       setPriceRangeValues();
       setStockRangeValues();
       setNoResults();
+      setFoundResult();
     });
   }
   priceInputLeft.addEventListener('input', () => {
@@ -286,7 +282,6 @@ const setInputsResult = async (): Promise<void> => {
         changedBrandArr.includes(elem.brand) &&
         elem.price >= parseInt(priceInputLeft.value) &&
         elem.price <= parseInt(priceInputRight.value) &&
-        //changedBrandArr.includes(elem.brand) &&
         elem.stock >= parseInt(stockInputLeft.value) &&
         elem.stock <= parseInt(stockInputRight.value) &&
         checkSearchParam(
@@ -296,15 +291,18 @@ const setInputsResult = async (): Promise<void> => {
           elem.price,
           elem.discountPercentage,
           elem.rating,
-          elem.stock
+          elem.stock,
+          elem.title
         )
       ) {
         createProductCard(elem);
       }
     });
+    chooseProduct();
     countProducts();
     setStockRangeValues();
     setNoResults();
+    setFoundResult();
   });
   priceInputRight.addEventListener('change', async () => {
     const minStock = parseInt(stockInputLeft.min);
@@ -322,7 +320,6 @@ const setInputsResult = async (): Promise<void> => {
         changedBrandArr.includes(elem.brand) &&
         elem.price >= parseInt(priceInputLeft.value) &&
         elem.price <= parseInt(priceInputRight.value) &&
-        //changedBrandArr.includes(elem.brand) &&
         elem.stock >= parseInt(stockInputLeft.value) &&
         elem.stock <= parseInt(stockInputRight.value) &&
         checkSearchParam(
@@ -332,15 +329,18 @@ const setInputsResult = async (): Promise<void> => {
           elem.price,
           elem.discountPercentage,
           elem.rating,
-          elem.stock
+          elem.stock,
+          elem.title
         )
       ) {
         createProductCard(elem);
       }
     });
+    chooseProduct();
     countProducts();
     setStockRangeValues();
     setNoResults();
+    setFoundResult();
   });
 
   stockInputLeft.addEventListener('input', () => {
@@ -378,7 +378,6 @@ const setInputsResult = async (): Promise<void> => {
         changedBrandArr.includes(elem.brand) &&
         elem.price >= parseInt(priceInputLeft.value) &&
         elem.price <= parseInt(priceInputRight.value) &&
-        //changedBrandArr.includes(elem.brand) &&
         elem.stock >= parseInt(stockInputLeft.value) &&
         elem.stock <= parseInt(stockInputRight.value) &&
         checkSearchParam(
@@ -388,15 +387,18 @@ const setInputsResult = async (): Promise<void> => {
           elem.price,
           elem.discountPercentage,
           elem.rating,
-          elem.stock
+          elem.stock,
+          elem.title
         )
       ) {
         createProductCard(elem);
       }
     });
+    chooseProduct();
     countProducts();
     setPriceRangeValues();
     setNoResults();
+    setFoundResult();
   });
   stockInputRight.addEventListener('change', async () => {
     const minPrice = parseInt(priceInputLeft.min);
@@ -414,7 +416,6 @@ const setInputsResult = async (): Promise<void> => {
         changedBrandArr.includes(elem.brand) &&
         elem.price >= parseInt(priceInputLeft.value) &&
         elem.price <= parseInt(priceInputRight.value) &&
-        //changedBrandArr.includes(elem.brand) &&
         elem.stock >= parseInt(stockInputLeft.value) &&
         elem.stock <= parseInt(stockInputRight.value) &&
         checkSearchParam(
@@ -424,15 +425,18 @@ const setInputsResult = async (): Promise<void> => {
           elem.price,
           elem.discountPercentage,
           elem.rating,
-          elem.stock
+          elem.stock,
+          elem.title
         )
       ) {
         createProductCard(elem);
       }
     });
+    chooseProduct();
     countProducts();
     setPriceRangeValues();
     setNoResults();
+    setFoundResult();
   });
 
   searchInput.addEventListener('keyup', async () => {
@@ -464,21 +468,25 @@ const setInputsResult = async (): Promise<void> => {
           elem.price,
           elem.discountPercentage,
           elem.rating,
-          elem.stock
+          elem.stock,
+          elem.title
         )
       ) {
         createProductCard(elem);
       }
     });
+    chooseProduct();
     countProducts();
     setPriceRangeValues();
     setStockRangeValues();
     setNoResults();
+    setFoundResult();
   });
 };
 
 startApplication()
   .then(getArrayOfCategory)
+  .then(createResetFiltersButton)
   .then(createCategoryFilter)
   .then(getArrayOfBrand)
   .then(createBrandFilter)
@@ -486,4 +494,6 @@ startApplication()
   .then(createStockFilter)
   .then(setInputsResult)
   .then(countProducts)
-  .then(chooseProduct);
+  .then(chooseProduct)
+  .then(resetFilters)
+  .then(setFoundResult);
