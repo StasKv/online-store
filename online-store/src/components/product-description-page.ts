@@ -1,5 +1,5 @@
 import { getProducts, IProduct, mainWrapper, payWrapper } from '../index';
-import { addToCart, dropFromCart, IProductInfo, getProductInfo, cartProductsId } from './product-card';
+import { addToCart, dropFromCart, IProductInfo, getProductInfo, cartProductsId, setAddOrDropName } from './product-card';
 import { createCartModal, openCartModal, openPayModal } from './shopping-cart';
 
 const generateDescrPage = ( product: IProduct) => {
@@ -152,6 +152,7 @@ const generateDescrPage = ( product: IProduct) => {
   headerLogo.addEventListener('click', () => {
     mainPageContent.style.display = `flex`;
     descrPageContent.remove();
+    setAddOrDropName()
   });
 
   productAddCartButton.addEventListener("click", () => {

@@ -243,3 +243,17 @@ export const calculatingItemsInCart = () => {
   }
 
 };
+
+export const setAddOrDropName = () => {
+ 
+  const buttons = document.querySelectorAll(".add-to-cart") as NodeListOf<HTMLButtonElement>;
+  const plusMinusButtons = document.querySelectorAll(".counter-wrapper")as NodeListOf<HTMLDivElement>;
+  for (let i = 0; i < buttons.length; i++) {
+    const id = buttons[i].dataset.id
+    const findProduct = cartProductsId.find((item) => item.id === Number(id));
+    if(findProduct) {
+      buttons[i].innerHTML = "Drop from cart";
+      plusMinusButtons[i].style.display = "none";
+    } 
+  }
+}

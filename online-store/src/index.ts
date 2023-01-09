@@ -77,7 +77,7 @@ const startApplication = async () => {
   addHandlerToElement("click", shoppingCart, handlerShoppingCart);
   createPayModal();
 };
-//startApplication();
+//
 
 headerLogo?.addEventListener("click", () => {
     const shoppingCartWrapper = document.querySelector(".shopping-cart-wrapper");
